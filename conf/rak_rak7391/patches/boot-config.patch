@@ -1,8 +1,8 @@
-Index: openwrt/target/linux/bcm27xx/image/config.txt
-===================================================================
---- openwrt.orig/target/linux/bcm27xx/image/config.txt
-+++ openwrt/target/linux/bcm27xx/image/config.txt
-@@ -11,4 +11,11 @@
+diff --git a/target/linux/bcm27xx/image/config.txt b/target/linux/bcm27xx/image/config.txt
+index db35d72ab7..d2eb46710c 100644
+--- a/target/linux/bcm27xx/image/config.txt
++++ b/target/linux/bcm27xx/image/config.txt
+@@ -11,4 +11,14 @@
  include distroconfig.txt
  
  [all]
@@ -13,6 +13,8 @@ Index: openwrt/target/linux/bcm27xx/image/config.txt
 +dtparam=i2c_arm=on
 +dtoverlay=dwc2
 +
++dtoverlay=pca953x,addr=0x26,pca9555
++dtoverlay=pca953x,addr=0x27,pca9555
++
 +# Uncomment the line below when shield uses PIN26 as GPIO7"
 +#dtoverlay=spi0-1cs
-+
