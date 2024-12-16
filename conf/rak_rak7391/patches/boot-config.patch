@@ -2,17 +2,48 @@ Index: openwrt/target/linux/bcm27xx/image/config.txt
 ===================================================================
 --- openwrt.orig/target/linux/bcm27xx/image/config.txt
 +++ openwrt/target/linux/bcm27xx/image/config.txt
-@@ -11,4 +11,11 @@
+@@ -11,4 +11,43 @@
  include distroconfig.txt
  
  [all]
 -# Place your custom settings here.
-+dtparam=spi=on
++
++# Enable UART
 +enable_uart=1
++
++# Enable SPI
++dtparam=spi=on
++
++# Enable I2C
 +dtparam=i2c1=on
 +dtparam=i2c_arm=on
-+dtoverlay=dwc2
++
++# Enable USB2
++dtoverlay=dwc2,dr_mode=host
++
++# Enable onboard RTC
++dtoverlay=i2c-rtc,pcf8563
++
++# Enable onboard GPIO Expander TPT29555 (compatible with PCA9555, this is specific to the RAK7391)
++#dtoverlay=pca953x,addr=0x26,pca9555
++#dtoverlay=pca953x,addr=0x27,pca9555
++
++# Enable onboard ADS1115 (this is specific to the RAK7391)
++#dtoverlay=ads1115
++#dtparam=cha_enable
++#dtparam=chb_enable
++#dtparam=chc_enable
++#dtparam=chd_enable
++#dtparam=i2c_arm_baudrate=400000
++
++# Antenna setting, values:
++#   ant1: PCB antenna (default)
++#   ant2: External antenna
++#   noant: Disable both antennas
++dtparam=ant1
 +
 +# Uncomment the line below when shield uses PIN26 as GPIO7"
 +#dtoverlay=spi0-1cs
 +
++# Shutdown on GPIO16 (specific to RAK7392)
++#dtoverlay=gpio-shutdown,gpio_pin=16,active_low=1,gpio_pull=up
