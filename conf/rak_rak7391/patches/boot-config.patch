@@ -22,7 +22,7 @@ Index: openwrt/target/linux/bcm27xx/image/config.txt
 +dtoverlay=dwc2,dr_mode=host
 +
 +# Enable onboard RTC
-+dtoverlay=i2c-rtc,pcf8563
++#dtoverlay=i2c-rtc,pcf8563
 +
 +# Enable onboard GPIO Expander TPT29555 (compatible with PCA9555, this is specific to the RAK7391)
 +#dtoverlay=pca953x,addr=0x26,pca9555
