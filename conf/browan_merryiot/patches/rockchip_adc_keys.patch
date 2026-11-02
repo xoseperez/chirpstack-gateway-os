@@ -1,0 +1,53 @@
+Index: openwrt/package/kernel/linux/modules/input.mk
+===================================================================
+--- openwrt.orig/package/kernel/linux/modules/input.mk
++++ openwrt/package/kernel/linux/modules/input.mk
+@@ -37,6 +37,23 @@ endef
+ 
+ $(eval $(call KernelPackage,hid-generic))
+ 
++define KernelPackage/input-adc-keys
++  SUBMENU:=$(INPUT_MODULES_MENU)
++  TITLE:=ADC Ladder Buttons support
++  DEPENDS:=+kmod-input-core +kmod-iio-core
++  KCONFIG:= \
++	CONFIG_KEYBOARD_ADC \
++	CONFIG_INPUT_KEYBOARD=y
++  FILES:=$(LINUX_DIR)/drivers/input/keyboard/adc-keys.ko
++  AUTOLOAD:=$(call AutoProbe,adc-keys,1)
++endef
++
++define KernelPackage/input-adc-keys/description
++ Buttons/keys input driver for resistor ladder connected on ADC
++endef
++
++$(eval $(call KernelPackage,input-adc-keys))
++
+ define KernelPackage/input-core
+   SUBMENU:=$(INPUT_MODULES_MENU)
+   TITLE:=Input device core
+Index: openwrt/target/linux/rockchip/armv8/config-6.6
+===================================================================
+--- openwrt.orig/target/linux/rockchip/armv8/config-6.6
++++ openwrt/target/linux/rockchip/armv8/config-6.6
+@@ -318,7 +318,11 @@ CONFIG_I2C_COMPAT=y
+ CONFIG_I2C_HELPER_AUTO=y
+ CONFIG_I2C_RK3X=y
+ CONFIG_IIO=y
++CONFIG_IIO_BUFFER=y
++CONFIG_IIO_KFIFO_BUF=y
+ # CONFIG_IIO_SCMI is not set
++CONFIG_IIO_TRIGGER=y
++CONFIG_IIO_TRIGGERED_BUFFER=y
+ CONFIG_ILLEGAL_POINTER_VALUE=0xdead000000000000
+ CONFIG_INDIRECT_PIO=y
+ CONFIG_INPUT=y
+@@ -573,7 +577,7 @@ CONFIG_ROCKCHIP_IOMMU=y
+ CONFIG_ROCKCHIP_MBOX=y
+ CONFIG_ROCKCHIP_PHY=y
+ CONFIG_ROCKCHIP_PM_DOMAINS=y
+-# CONFIG_ROCKCHIP_SARADC is not set
++CONFIG_ROCKCHIP_SARADC=y
+ CONFIG_ROCKCHIP_THERMAL=y
+ CONFIG_ROCKCHIP_TIMER=y
+ CONFIG_RODATA_FULL_DEFAULT_ENABLED=y

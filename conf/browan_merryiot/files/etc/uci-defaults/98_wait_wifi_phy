@@ -1,0 +1,45 @@
+# Wait for the Wi-Fi radio before the setup access point is configured.
+#
+# OpenWrt's boot runs "wifi config" once, just before the uci-defaults
+# scripts. On this board the Wi-Fi radio only registers once the SDIO driver
+# has loaded its firmware, which can happen later than that. The setup access
+# point script (99_config_chirpstack_ap) then finds no wireless configuration,
+# exits successfully and is deleted, so the gateway never gets its setup
+# access point.
+#
+# On a first boot with no radio configured yet, this script waits for the radio
+# to appear and runs "wifi config" itself, so the wireless configuration exists
+# by the time the 99_* scripts run (they run in name order, after this one).
+# On any boot where the configuration already exists, including a sysupgrade
+# over an existing configuration, it does nothing.
+#
+# A non-zero exit would keep the script and retry it on every boot, so it
+# always exits 0, also when the radio never shows up. A gateway without a
+# working radio just waits the full time once and then continues as before.
+
+WAIT_MAX=20
+
+if uci -q get wireless.radio0 > /dev/null; then
+    exit 0
+fi
+
+waited=0
+found=0
+while [ "$waited" -lt "$WAIT_MAX" ]; do
+    if [ -n "$(ls /sys/class/ieee80211/ 2> /dev/null)" ]; then
+        found=1
+        break
+    fi
+    sleep 1
+    waited=$((waited + 1))
+done
+
+/sbin/wifi config
+
+if [ "$found" -eq 1 ]; then
+    logger -t wait_wifi_phy "Wi-Fi radio found after ${waited}s"
+else
+    logger -t wait_wifi_phy "no Wi-Fi radio after ${waited}s, giving up"
+fi
+
+exit 0

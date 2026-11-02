@@ -1,0 +1,4 @@
+add_browan_merryiot_device.patch
+add_browan_merryiot_uboot.patch
+rockchip_adc_keys.patch
+add_browan_merryiot_wifi_nvram.patch

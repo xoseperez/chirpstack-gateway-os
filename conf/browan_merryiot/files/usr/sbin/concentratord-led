@@ -1,0 +1,35 @@
+#!/bin/sh
+# Status LED: lit while the LoRa concentrator daemon is running.
+#
+# The LED follows the live process, not the service's enabled state. A stopped
+# or disabled service, a crash, the gap while procd respawns the daemon and a
+# start that fails all leave no process behind, so they all show as off within
+# about 2 seconds. It shows whether the daemon is really up, which neither
+# "enabled" nor "started" can tell an operator.
+#
+# The LED is only written when its state changes. No signal handler is set on
+# purpose: with the default action the shell dies as soon as procd asks it to
+# stop, instead of finishing the current sleep first.
+
+LED="/sys/class/leds/green:status"
+DAEMON="chirpstack-concentratord-sx1302"
+
+# Take the LED away from any trigger so that brightness is the only thing
+# driving it.
+echo none > "$LED/trigger"
+
+last=""
+while true; do
+    if pidof "$DAEMON" > /dev/null; then
+        state=1
+    else
+        state=0
+    fi
+
+    if [ "$state" != "$last" ]; then
+        echo "$state" > "$LED/brightness"
+        last="$state"
+    fi
+
+    sleep 2
+done

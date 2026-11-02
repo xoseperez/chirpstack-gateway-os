@@ -25,3 +25,4 @@ do_prepare $1 rak ramips mt76x8 rakwireless_rak636 rak7267
 do_prepare $1 rak ramips mt76x8 rakwireless_rak636 rak7266
 do_prepare $1 seeed ramips mt76x8 sensecap_wm7628n sensecap-m2
 do_prepare $1 dragino ath79 generic dragino_lps8n lps8n
+do_prepare $1 browan rockchip armv8 browan_merryiot l0001

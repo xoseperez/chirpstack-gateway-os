@@ -1,0 +1,40 @@
+#!/bin/sh
+# Wi-Fi LED: follow whichever Wi-Fi interface appears.
+#
+# The Wi-Fi module on this board is driven by brcmfmac, a FullMAC driver that
+# registers no per-radio LED triggers, so the phy0tpt trigger that other
+# boards use for this does not exist here. The LED is bound to the network
+# interface instead, with the netdev trigger: lit while the link is up and
+# blinking with traffic.
+#
+# Binding to whichever interface appears, rather than to a fixed name, covers
+# both the setup access point and client mode, which create differently named
+# interfaces. When the radio is disabled and the interface goes away, the
+# netdev trigger turns the LED off by itself; the next interface that appears
+# binds it again.
+#
+# The binding is written straight to sysfs, not to /etc/config/system. A UCI
+# value would persist, and the LED service would then fight this handler every
+# time it reloads. For the same reason an LED section for this LED that the
+# operator created (in LuCI, for example) wins: if one exists, the LED is left
+# alone.
+
+LED="/sys/class/leds/green:wlan"
+
+[ "$ACTION" = "add" ] || exit 0
+[ "$DEVTYPE" = "wlan" ] || exit 0
+[ -d "$LED" ] || exit 0
+
+case "$(uci -q show system)" in
+    *".sysfs='green:wlan'"*) exit 0 ;;
+esac
+
+# The trigger goes first: device_name, link, tx and rx only exist once the
+# netdev trigger is active. If it cannot be set, the rest is skipped.
+echo netdev > "$LED/trigger" &&
+    echo "$INTERFACE" > "$LED/device_name" &&
+    echo 1 > "$LED/link" &&
+    echo 1 > "$LED/tx" &&
+    echo 1 > "$LED/rx"
+
+exit 0
